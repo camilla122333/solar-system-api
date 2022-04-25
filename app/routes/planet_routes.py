@@ -10,16 +10,25 @@ class Planet():
         self.description = description
         self.moons = moons
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "moons": self.moons
+        }
+
 planets = [
     Planet( 1, "Mercury", ["red", "hot"], False),
     Planet( 2, "Venus", ["orange", "hot"], False),
     Planet( 3, "Earth", ["blue", "hot"], True)
 ]
 
-planet_bp = Blueprint("planet", __name__, url_prefix="/planets")
+planet_bp = Blueprint("planet_bp", __name__)
+# planet_bp = Blueprint("planet_bp", __name__, url_prefix="/planets")
 
 #Get all planets
-@planet_bp.route("", methods=["GET"])
+@planet_bp.route("/planets", methods=["GET"])
 def read_all_planets():
     planets_response = []
 
