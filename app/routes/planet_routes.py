@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, make_response, abort
-# Define a Planet class with the attributes id, name,
-# and description, and one additional attribute
-# Create a list of Planet instances
+'''
+Defined a Planet class with the attributes id, name,
+and description, and moons. Also, Created a list of Planet instances.
+'''
+
 
 class Planet():
     def __init__(self, id, name, description, moons):
@@ -19,12 +21,16 @@ class Planet():
         }
 
 planets = [
-    Planet(1, "Mercury", ["red", "hot"], False),
-    Planet(2, "Venus", ["orange", "hot"], False),
-    Planet(3, "Earth", ["blue", "hot"], True)
+    Planet(1, "Mercury", ["Grey", "closest to the sun", "smallest planet"], False),
+    Planet(2, "Venus", ["Brown and grey", "hottest planet"], False),
+    Planet(3, "Earth", ["Blue, brown green and white", "water world","1 moon"], True),
+    Planet(4, "Mars", ["Red, brown and tan", "2 moons"], True),
+    Planet(5, "Jupiter", ["Brown, orange and tan, with white cloud stripes","largest planet", "79 moons"], True),
+    Planet(6, "Saturn", ["Golden, brown, and blue-grey"," large and distinct ring system" ,"82 moons"], True),
+    Planet(7, "Uranus", ["Blue-green", " holds the record for the coldest temperature ever measured in the solar system ","27 moons"], True),
+    Planet(8, "Neptune", ["Blue"," on average the coldest planet" ,"14 moons"], True)
 ]
 
-# planet_bp = Blueprint("planet_bp", __name__)
 planet_bp = Blueprint("planet_bp", __name__, url_prefix="/planets")
 
 #Get all planets
@@ -38,10 +44,7 @@ def read_all_planets():
     return jsonify(planets_response)
 
 '''
-Create the following endpoint(s), with similar functionality
-presented in the Hello Books API:
-
-As a client, I want to send a request...
+Created the following endpoint(s). This API can handle requests such as the following:
 ...to get one existing planet, so that I can see the id, name, description,
 and other data of the planet.
 ... such that trying to get one non-existing planet responds
@@ -68,19 +71,3 @@ def read_one_planet(id):
     planet = validate_planet(id)
 
     return jsonify(planet.to_json(), 200)
-
-
-'''
-def validate_cat(id):
-    try:
-        id = int(id)
-    except:
-        return abort(make_response({"message": f"cat {id} is invalid"}, 400))
-
-    for cat in cats:
-        if cat.id == id:
-            return cat
-
-    return abort(make_response({"message":f"cat {id} not found"}, 404))
-
-'''
