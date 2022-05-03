@@ -56,6 +56,8 @@ def create_planet():
 def read_all_planets():
     planets_response = []
     planets = Planet.query.all()
+    #make_response.append(planet.to_json())
+
     for planet in planets:
         #planets_response.append(planet.to_json()) 
         planets_response.append(
@@ -84,16 +86,41 @@ def validate_planet(id):
         id = int(id)
     except:
         return abort(make_response({"message": f"planet {id} is invalid"}, 400))
+    planet= Planet.query.get(id)
+    
+    # for planet in planets:
+    if not planet:
+        return abort(make_response({"message": f"planet {id} is not found"}, 404))
+    return planet
 
-    for planet in planets:
-        if planet.id == id:
-            return planet
-
-    return abort(make_response({"message": f"planet {id} is not found"}, 404))
-
+    
 #Get one planet
 @planet_bp.route("/<id>", methods=["GET"])
 def read_one_planet(id):
     planet = validate_planet(id)
 
     return jsonify(planet.to_json(), 200)
+
+
+# UPDATE ONE planet
+@planet_bp.route("/<id>", methods = ["PUT"])
+def update_one_planet(id):
+    planet = validate_planet(id)
+    request_body = request.get_json()    # would get response body we put int
+
+    planet.title = request_body["title"]
+    planet.description = request_body["description"]
+    planet.moons = request_body["moons"]
+
+    db.session.commit()  
+    return make_response(f"Planet # {planet.id} successfully updated"), 200
+
+# DELETE ONE Planet
+@planet_bp.route("/<id>", methods = ["DELETE"])
+def delete_one_planet(id):
+    planet = validate_planet(id)
+
+    db.session.delete(planet)
+    db.session.commit()
+
+    return make_response(f"Planet # {planet.id} successfully deleted"), 200
