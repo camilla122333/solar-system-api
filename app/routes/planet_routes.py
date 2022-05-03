@@ -36,29 +36,36 @@ and description, and moons. Also, Created a list of Planet instances.
 planet_bp = Blueprint("planet_bp", __name__, url_prefix="/planets")
 
 #CREATE PLANET
+
+# Create planet
 @planet_bp.route("", methods=["POST"])
 def create_planet():
     request_body = request.get_json()
-
-    Planet(
-        name=request_body['name'],
-        # description=request_body['description'],
-        moons=request_body['moons'],
-    )
+    new_planet = Planet(title=request_body["title"],
+                    description=request_body["description"],
+                    moons = request_body["moons"]
+                    )
 
     db.session.add(new_planet)
     db.session.commit()
 
-    return make_response(f"Planet {new_planet.name} has been successfully created!", 201)
-
+    return make_response(f"Planet {new_planet.title} successfully created", 201)
 
 #Get all planets
 @planet_bp.route("", methods=["GET"])
 def read_all_planets():
     planets_response = []
-
+    planets = Planet.query.all()
     for planet in planets:
-        planets_response.append(planet.to_json())
+        #planets_response.append(planet.to_json()) 
+        planets_response.append(
+            {
+                "id": planet.id,
+                "title": planet.title,
+                "description": planet.description,
+                "moons": planet.moons
+            }
+        )
 
     return jsonify(planets_response)
 
