@@ -8,7 +8,7 @@ def validate_planet(id):
         return abort(make_response({"message": f"planet {id} is invalid"}, 400))
     planet= Planet.query.get(id)
     
-    # for planet in planets:
     if not planet:
         return abort(make_response({"message": f"planet {id} is not found"}, 404))
+
     return planet
