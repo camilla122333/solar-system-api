@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, make_response, abort, request
 from app.models.planet import Planet
 from app import db
+from .helpers import validate_planet
 
 '''
 Defined a Planet class with the attributes id, name,
@@ -41,10 +42,7 @@ planet_bp = Blueprint("planet_bp", __name__, url_prefix="/planets")
 @planet_bp.route("", methods=["POST"])
 def create_planet():
     request_body = request.get_json()
-    new_planet = Planet(title=request_body["title"],
-                    description=request_body["description"],
-                    moons = request_body["moons"]
-                    )
+    new_planet = Planet.create(request_body)
 
     db.session.add(new_planet)
     db.session.commit()
@@ -54,8 +52,13 @@ def create_planet():
 #Get all planets
 @planet_bp.route("", methods=["GET"])
 def read_all_planets():
+    title_query = request.args.get("title")
+    if title_query:
+        planets = Planet.query.filter_by(title=title_query)
+    else:
+        planets = Planet.query.all()
+    
     planets_response = []
-    planets = Planet.query.all()
     #make_response.append(planet.to_json())
 
     for planet in planets:
@@ -71,6 +74,8 @@ def read_all_planets():
 
     return jsonify(planets_response)
 
+
+
 '''
 Created the following endpoint(s). This API can handle requests such as the following:
 ...to get one existing planet, so that I can see the id, name, description,
@@ -81,17 +86,17 @@ with get a 404 response, so that I know the planet resource was not found.
 with get a 400 response, so that I know the planet_id was invalid.
 '''
 
-def validate_planet(id):
-    try:
-        id = int(id)
-    except:
-        return abort(make_response({"message": f"planet {id} is invalid"}, 400))
-    planet= Planet.query.get(id)
+# def validate_planet(id):
+#     try:
+#         id = int(id)
+#     except:
+#         return abort(make_response({"message": f"planet {id} is invalid"}, 400))
+#     planet= Planet.query.get(id)
     
-    # for planet in planets:
-    if not planet:
-        return abort(make_response({"message": f"planet {id} is not found"}, 404))
-    return planet
+#     # for planet in planets:
+#     if not planet:
+#         return abort(make_response({"message": f"planet {id} is not found"}, 404))
+#     return planet
 
     
 #Get one planet
@@ -108,9 +113,10 @@ def update_one_planet(id):
     planet = validate_planet(id)
     request_body = request.get_json()    # would get response body we put int
 
-    planet.title = request_body["title"]
-    planet.description = request_body["description"]
-    planet.moons = request_body["moons"]
+    planet.update(request_body)
+    # planet.title = request_body["title"]
+    # planet.description = request_body["description"]
+    # planet.moons = request_body["moons"]
 
     db.session.commit()  
     return make_response(f"Planet # {planet.id} successfully updated"), 200
