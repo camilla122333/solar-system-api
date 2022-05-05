@@ -24,7 +24,7 @@ def read_all_planets():
         planets = Planet.query.filter_by(title=title_query)
     else:
         planets = Planet.query.all()
-    
+
     planets_response = []
 
     for planet in planets:
@@ -63,7 +63,7 @@ def update_one_planet(id):
     planet.update(request_body)
     db.session.commit()
 
-    return make_response(f"Planet # {planet.id} successfully updated"), 200
+    return make_response(jsonify(f"Planet # {planet.id} successfully updated"), 200)
 
 #Delete one planet
 @planet_bp.route("/<id>", methods = ["DELETE"])
