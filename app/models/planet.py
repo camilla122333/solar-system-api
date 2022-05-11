@@ -11,6 +11,8 @@ class Planet(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     moons = db.Column(db.Boolean, nullable=False)
+    planet_moons = db.relationship("Moon", back_populates="planet")
+
 
     def to_json(self):
         return {

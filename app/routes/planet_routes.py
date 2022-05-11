@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, make_response, abort, request
 from app.models.planet import Planet
 from app import db
-from .helpers import validate_planet
+from .planet_helpers import validate_planet
+
+
 
 planet_bp = Blueprint("planet_bp", __name__, url_prefix="/planets")
 
@@ -73,3 +75,29 @@ def delete_one_planet(id):
     db.session.commit()
 
     return make_response(f"Planet # {planet.id} successfully deleted"), 200
+
+
+# @planet_bp.route("/<id>/cats", methods=["POST"])
+# def create_moon(id):
+#     planet = validate_planet(id)
+
+#     request_body = request.get_json()
+#     new_moon = Moon.create(request_body)
+
+#     new_moon.planet = planet
+#     db.session.add(new_moon)
+#     db.session.commit()
+
+#     return make_response(jsonify(f"Moon {new_moon.name} orbiting around \
+#         {new_moon.planet.title} successfully created"), 201)    
+
+
+@planet_bp.route("/<id>/moons", methods=["GET"])
+def read_moons(id):
+    planet = validate_planet(id)
+
+    moons_response = []
+    for moon in planet.planet_moons:
+        moons_response.append(moon.to_json())
+
+    return jsonify(moons_response), 200
